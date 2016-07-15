@@ -1,5 +1,5 @@
 def sync_dirs(src, dst, skip_patterns=[])
-	skip_patterns = skip_patterns.map { |e| e.is_a? String ? Regexp.new(e) : e }
+	skip_patterns = skip_patterns.map { |e| Regexp.new(e) }
 	src_entries = list(src, skip_patterns).map{ |e| e.slice(src.length+1, e.length - (src.length + 1)) }
 	dst_entries = list(dst, skip_patterns).map{ |e| e.slice(dst.length+1, e.length - (dst.length + 1)) }
 
