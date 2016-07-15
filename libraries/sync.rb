@@ -1,6 +1,7 @@
-def sync_dirs(src, dst)
-	src_entries = list(src).map{ |e| e.slice(src.length+1, e.length - (src.length + 1)) }
-	dst_entries = list(dst).map{ |e| e.slice(dst.length+1, e.length - (dst.length + 1)) }
+def sync_dirs(src, dst, skip_patterns=[])
+	skip_patterns = skip_patterns.map { |e| e.is_a? Regexp ? e : Regex.new(e) }
+	src_entries = list(src, skip_patterns).map{ |e| e.slice(src.length+1, e.length - (src.length + 1)) }
+	dst_entries = list(dst, skip_patterns).map{ |e| e.slice(dst.length+1, e.length - (dst.length + 1)) }
 
 	entries_to_add = src_entries - dst_entries
 	entries_to_del = dst_entries - src_entries
@@ -24,12 +25,13 @@ def sync_dirs(src, dst)
 	end
 end
 
-def list(path)
+def list(path, skip_patterns=[])
 	result = []
 	entries = Dir.entries(path)
 	entries.each do |entry|
 		next if (entry == "." or entry == "..")
 		entry = File.join(path, entry)
+		next if skip_patterns.any? {|p| !p.match(entry).nil? }
 		if (Dir.exists? (entry))
 			result = result.concat(list(entry))
 		else
