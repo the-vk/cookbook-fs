@@ -33,7 +33,7 @@ def list(path, skip_patterns=[])
 		entry = File.join(path, entry)
 		next if skip_patterns.any? {|p| !p.match(entry).nil? }
 		if (Dir.exists? (entry))
-			result = result.concat(list(entry))
+			result = result.concat(list(entry, skip_patterns))
 		else
 			result.push(entry)
 		end
